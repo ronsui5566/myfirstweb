@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Self-Regulated Learning through Self-Assessment Strategies | Research Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Serif:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --white: #ffffff;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+            --blue-500: #3b82f6;
+            --blue-600: #2563eb;
+            --blue-700: #1d4ed8;
+            --emerald-500: #10b981;
+            --emerald-600: #059669;
+            --amber-500: #f59e0b;
+            --amber-600: #d97706;
+            --rose-500: #f43f5e;
+            --rose-600: #e11d48;
+            --purple-500: #8b5cf6;
+            --purple-600: #7c3aed;
+        }
+
+        * {
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+            min-height: 100vh;
+        }
+
+        .font-serif {
+            font-family: 'IBM Plex Serif', serif;
+        }
+
+        .card {
+            background: var(--white);
+            border: 1px solid var(--slate-200);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+            transition: all 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .ring-card {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 0 0 1px var(--slate-200);
+            transition: all 0.2s ease;
+        }
+
+        .ring-card:hover {
+            box-shadow: 0 0 0 1px var(--slate-300), 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .metric-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--purple-500), var(--purple-600));
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .metric-card:hover::before {
+            opacity: 1;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.025em;
+        }
+
+        .badge-blue {
+            background: #eff6ff;
+            color: var(--blue-600);
+            border: 1px solid #bfdbfe;
+        }
+
+        .badge-purple {
+            background: #f5f3ff;
+            color: var(--purple-600);
+            border: 1px solid #ddd6fe;
+        }
+
+        .badge-emerald {
+            background: #ecfdf5;
+            color: var(--emerald-600);
+            border: 1px solid #a7f3d0;
+        }
+
+        .badge-amber {
+            background: #fffbeb;
+            color: var(--amber-600);
+            border: 1px solid #fde68a;
+        }
+
+        .badge-rose {
+            background: #fff1f2;
+            color: var(--rose-600);
+            border: 1px solid #fecdd3;
+        }
+
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: var(--slate-100);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.8s ease;
+        }
+
+        .tab-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--slate-500);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            background: var(--slate-100);
+        }
+
+        .tab-btn.active {
+            background: var(--slate-800);
+            color: white;
+        }
+
+        .nav-link {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--slate-500);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background: var(--slate-100);
+            color: var(--slate-700);
+        }
+
+        .nav-link.active {
+            background: var(--slate-100);
+            color: var(--slate-800);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .animate-delay-1 { animation-delay: 0.1s; }
+        .animate-delay-2 { animation-delay: 0.2s; }
+        .animate-delay-3 { animation-delay: 0.3s; }
+        .animate-delay-4 { animation-delay: 0.4s; }
+    </style>
+</head>
+<body class="text-slate-700">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-6 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                    </div>
+                    <span class="font-semibold text-slate-800">Research Dashboard</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="#overview" class="nav-link active">Overview</a>
+                    <a href="#methodology" class="nav-link">Methodology</a>
+                    <a href="#findings" class="nav-link">Findings</a>
+                    <a href="#data" class="nav-link">Data</a>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="badge badge-purple">Published 2025</span>
+                    <a href="https://doi.org/10.1080/09500693.2025.2537143" target="_blank" class="text-sm text-blue-600 hover:text-blue-700 font-medium">DOI →</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="max-w-7xl mx-auto px-6 pt-12 pb-8">
+        <div class="animate-in opacity-0">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="badge badge-purple">International Journal of Science Education</span>
+                <span class="text-slate-400 text-sm">Vol. 2025</span>
+            </div>
+            <h1 class="font-serif text-4xl md:text-5xl font-semibold text-slate-900 leading-tight mb-6 max-w-4xl">
+                Does Self-Regulated Learning Happen? Learning Socio-Scientific Argumentation through Self-Assessment Strategies
+            </h1>
+            <p class="text-xl text-slate-500 max-w-3xl mb-8">
+                Investigating the Effects of Three Self-Assessment Designs on Students' Cognitive and Metacognitive Outcomes
+            </p>
+            <div class="flex flex-wrap items-center gap-6 text-sm">
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center text-purple-600 font-semibold">CS</div>
+                    <div>
+                        <div class="font-medium text-slate-800">Chi-Jung Sui</div>
+                        <div class="text-slate-400 text-xs">First Author</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-100 to-emerald-200 flex items-center justify-center text-emerald-600 font-semibold">MY</div>
+                    <div>
+                        <div class="font-medium text-slate-800">Miao-Hsuan Yen</div>
+                        <div class="text-slate-400 text-xs">Co-Author</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-blue-600 font-semibold">YL</div>
+                    <div>
+                        <div class="font-medium text-slate-800">Yi-Chen Lin</div>
+                        <div class="text-slate-400 text-xs">Co-Author</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center text-amber-600 font-semibold">CW</div>
+                    <div>
+                        <div class="font-medium text-slate-800">Chia-Yu Wang</div>
+                        <div class="text-slate-400 text-xs">Co-Author</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-rose-100 to-rose-200 flex items-center justify-center text-rose-600 font-semibold">CC</div>
+                    <div>
+                        <div class="font-medium text-slate-800">Chun-Yen Chang</div>
+                        <div class="text-slate-400 text-xs">Corresponding Author</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Key Metrics -->
+    <section class="max-w-7xl mx-auto px-6 pb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="card metric-card p-5 animate-in animate-delay-1 opacity-0">
+                <div class="text-slate-500 text-sm mb-1">Sample Size</div>
+                <div class="text-3xl font-semibold text-slate-900">116</div>
+                <div class="text-slate-400 text-xs">8th Grade Students</div>
+            </div>
+            <div class="card metric-card p-5 animate-in animate-delay-2 opacity-0">
+                <div class="text-slate-500 text-sm mb-1">Study Duration</div>
+                <div class="text-3xl font-semibold text-slate-900">3</div>
+                <div class="text-slate-400 text-xs">Units on Energy-Related SSIs</div>
+            </div>
+            <div class="card metric-card p-5 animate-in animate-delay-3 opacity-0">
+                <div class="text-slate-500 text-sm mb-1">Groups</div>
+                <div class="text-3xl font-semibold text-slate-900">3</div>
+                <div class="text-slate-400 text-xs">Self-Assessment Conditions</div>
+            </div>
+            <div class="card metric-card p-5 animate-in animate-delay-4 opacity-0">
+                <div class="text-slate-500 text-sm mb-1">Publication</div>
+                <div class="text-3xl font-semibold text-slate-900">2025</div>
+                <div class="text-slate-400 text-xs">International Journal of Science Education</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 pb-16">
+        <!-- Overview Section -->
+        <section id="overview" class="mb-16">
+            <div class="card p-8">
+                <h2 class="font-serif text-2xl font-semibold text-slate-900 mb-6">Abstract</h2>
+                <p class="text-slate-600 leading-relaxed mb-6">
+                    The current study addresses a notable gap in our understanding of what self-assessment design improves students' socio-scientific argumentation. We investigated the effects of three self-assessment designs: (1) Prediction-only, where students predicted their performance; (2) Standards-informed, where students predicted their performance and compared it against evaluation criteria; and (3) Reflective-adaptation, which additionally engaged students in reflecting on and adjusting their learning strategies.
+                </p>
+                <p class="text-slate-600 leading-relaxed mb-6">
+                    Over the course of three units focused on energy-related socio-scientific issues, we examined students' cognitive and metacognitive outcomes – including the quality of their arguments (supporting claims and rebuttals), the accuracy of their self-assessments, and their self-regulation growth from pre- to post-test.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+                    <div class="ring-card p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="badge badge-purple text-xs">Key Finding</span>
+                        </div>
+                        <p class="text-sm text-slate-600">Only the Reflective-adaptation group exhibited a significant improvement in self-regulation.</p>
+                    </div>
+                    <div class="ring-card p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="badge badge-emerald text-xs">Cognitive Outcome</span>
+                        </div>
+                        <p class="text-sm text-slate-600">Reflective-adaptation group demonstrated the most substantial gains in argumentation quality.</p>
+                    </div>
+                    <div class="ring-card p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="badge badge-blue text-xs">Metacognitive</span>
+                        </div>
+                        <p class="text-sm text-slate-600">The shift from monitoring to active regulation enhanced both cognitive and metacognitive skills.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Methodology Section -->
+        <section id="methodology" class="mb-16">
+            <h2 class="font-serif text-2xl font-semibold text-slate-900 mb-6">Research Design</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Condition 1 -->
+                <div class="card p-6">
+                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center mb-4">
+                        <span class="text-blue-600 font-bold text-xl">1</span>
+                    </div>
+                    <h3 class="font-semibold text-slate-900 mb-3">Prediction-Only</h3>
+                    <p class="text-sm text-slate-600 mb-4">Students predicted their performance on the argumentation task without additional guidance or criteria.</p>
+                    <div class="border-t border-slate-200 pt-4">
+                        <div class="text-xs text-slate-400 mb-2">Focus</div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="badge badge-blue text-xs">Performance Prediction</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Condition 2 -->
+                <div class="card p-6">
+                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-emerald-100 to-emerald-200 flex items-center justify-center mb-4">
+                        <span class="text-emerald-600 font-bold text-xl">2</span>
+                    </div>
+                    <h3 class="font-semibold text-slate-900 mb-3">Standards-Informed</h3>
+                    <p class="text-sm text-slate-600 mb-4">Students predicted their performance and compared it against evaluation criteria for argumentation quality.</p>
+                    <div class="border-t border-slate-200 pt-4">
+                        <div class="text-xs text-slate-400 mb-2">Focus</div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="badge badge-emerald text-xs">Evaluation Criteria</span>
+                            <span class="badge badge-blue text-xs">Self-Monitoring</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Condition 3 -->
+                <div class="card p-6">
+                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center mb-4">
+                        <span class="text-purple-600 font-bold text-xl">3</span>
+                    </div>
+                    <h3 class="font-semibold text-slate-900 mb-3">Reflective-Adaptation</h3>
+                    <p class="text-sm text-slate-600 mb-4">Students predicted, compared against criteria, and engaged in reflecting on and adjusting their learning strategies.</p>
+                    <div class="border-t border-slate-200 pt-4">
+                        <div class="text-xs text-slate-400 mb-2">Focus</div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="badge badge-purple text-xs">Strategy Reflection</span>
+                            <span class="badge badge-amber text-xs">Active Regulation</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Measures -->
+            <div class="card p-8">
+                <h3 class="font-semibold text-slate-900 mb-6">Outcome Measures</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="font-medium text-slate-800 mb-1">Argumentation Quality</div>
+                            <p class="text-sm text-slate-500">Quality of supporting claims and rebuttals in socio-scientific arguments</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="font-medium text-slate-800 mb-1">Self-Assessment Accuracy</div>
+                            <p class="text-sm text-slate-500">Alignment between predicted and actual performance</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="font-medium text-slate-800 mb-1">Self-Regulation Growth</div>
+                            <p class="text-sm text-slate-500">Change in self-regulated learning abilities from pre- to post-test</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="font-medium text-slate-800 mb-1">Metacognitive Skills</div>
+                            <p class="text-sm text-slate-500">Development of metacognitive strategies and self-monitoring abilities</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Findings Section -->
+        <section id="findings" class="mb-16">
+            <h2 class="font-serif text-2xl font-semibold text-slate-900 mb-6">Key Findings</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Finding 1 -->
+                <div class="card p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="font-semibold text-slate-900">Self-Regulation Improvement</h3>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4">
+                        Only the <strong>Reflective-adaptation group</strong> exhibited a significant improvement in self-regulation from pre- to post-test.
+                    </p>
+                    <div class="progress-bar">
+                        <div class="progress-fill bg-purple-500" style="width: 85%"></div>
+                    </div>
+                    <div class="flex justify-between text-xs text-slate-400 mt-2">
+                        <span>Prediction-Only</span>
+                        <span>Standards-Informed</span>
+                        <span>Reflective-Adaptation</span>
+                    </div>
+                </div>
+
+                <!-- Finding 2 -->
+                <div class="card p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                        </div>
+                        <h3 class="font-semibold text-slate-900">Argumentation Quality Gains</h3>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4">
+                        The <strong>Reflective-adaptation group</strong> demonstrated the most substantial gains in argumentation quality over time, particularly in generating well-supported claims.
+                    </p>
+                    <div class="progress-bar">
+                        <div class="progress-fill bg-emerald-500" style="width: 92%"></div>
+                    </div>
+                    <div class="flex justify-between text-xs text-slate-400 mt-2">
+                        <span>Prediction-Only</span>
+                        <span>Standards-Informed</span>
+                        <span>Reflective-Adaptation</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conclusion -->
+            <div class="card p-8 bg-gradient-to-br from-purple-50 to-white">
+                <h3 class="font-semibold text-slate-900 mb-4">Conclusion</h3>
+                <p class="text-slate-600 leading-relaxed">
+                    These findings highlight the <strong>pivotal role of adaptation tasks</strong> in helping students move beyond monitoring toward active regulation. This shift not only enhanced cognitive performance but also strengthened metacognitive skills, underscoring the value of comprehensive self-assessment approaches in science education.
+                </p>
+            </div>
+        </section>
+
+        <!-- Data Section -->
+        <section id="data">
+            <h2 class="font-serif text-2xl font-semibold text-slate-900 mb-6">Study Materials</h2>
+            
+            <div class="card p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-semibold text-slate-900 mb-3">Research Context</h3>
+                        <ul class="space-y-2 text-sm text-slate-600">
+                            <li class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                                Energy-related socio-scientific issues in Taiwan
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                                8th grade students (N=116)
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                                Three instructional units
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                                Quasi-experimental design
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-slate-900 mb-3">Keywords</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="badge badge-purple">Self-assessment</span>
+                            <span class="badge badge-blue">Metacognition</span>
+                            <span class="badge badge-emerald">Argumentation</span>
+                            <span class="badge badge-amber">Self-regulated learning</span>
+                            <span class="badge badge-rose">Socio-scientific issues</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="border-t border-slate-200 mt-6 pt-6">
+                    <span class="text-xs text-slate-400">Funded by NSTC Taiwan</span>
+                    <a href="https://doi.org/10.1080/09500693.2025.2537143" target="_blank" class="text-sm text-blue-600 hover:text-blue-700 font-medium ml-4">View Full Paper →</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                    </div>
+                    <span class="font-semibold">Research Dashboard</span>
+                </div>
+                <div class="text-slate-400 text-sm">
+                    © 2025 Chi-Jung Sui Research Lab. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Active nav link on scroll
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
