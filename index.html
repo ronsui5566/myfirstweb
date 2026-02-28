@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STEM-5E Socio-Scientific Argumentation with GenAI Scaffolding | Research Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Serif:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --white: #ffffff;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+            --blue-500: #3b82f6;
+            --blue-600: #2563eb;
+            --blue-700: #1d4ed8;
+            --emerald-500: #10b981;
+            --emerald-600: #059669;
+            --amber-500: #f59e0b;
+            --amber-600: #d97706;
+            --rose-500: #f43f5e;
+            --rose-600: #e11d48;
+        }
+
+        * {
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+            min-height: 100vh;
+        }
+
+        .font-serif {
+            font-family: 'IBM Plex Serif', serif;
+        }
+
+        .card {
+            background: var(--white);
+            border: 1px solid var(--slate-200);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+            transition: all 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .ring-card {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 0 0 1px var(--slate-200);
+            transition: all 0.2s ease;
+        }
+
+        .ring-card:hover {
+            box-shadow: 0 0 0 1px var(--slate-300), 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .metric-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--blue-500), var(--blue-600));
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .metric-card:hover::before {
+            opacity: 1;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.025em;
+        }
+
+        .badge-blue {
+            background: #eff6ff;
+            color: var(--blue-600);
+            border: 1px solid #bfdbfe;
+        }
+
+        .badge-emerald {
+            background: #ecfdf5;
+            color: var(--emerald-600);
+            border: 1px solid #a7f3d0;
+        }
+
+        .badge-amber {
+            background: #fffbeb;
+            color: var(--amber-600);
+            border: 1px solid #fde68a;
+        }
+
+        .badge-rose {
+            background: #fff1f2;
+            color: var(--rose-600);
+            border: 1px solid #fecdd3;
+        }
+
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: var(--slate-100);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.8s ease;
+        }
+
+        .tab-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--slate-500);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--slate-700);
+            background: var(--slate-100);
+        }
+
+        .tab-btn.active {
+            color: var(--blue-600);
+            background: #eff6ff;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--slate-200);
+            margin: 24px 0;
+        }
+
+        .stat-ring {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-ring svg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .stat-ring circle {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+        }
+
+        .stat-ring .bg-circle {
+            stroke: var(--slate-100);
+        }
+
+        .stat-ring .progress-circle {
+            stroke-dasharray: 339.292;
+            stroke-dashoffset: 339.292;
+            transition: stroke-dashoffset 1s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+
+        .chart-container {
+            position: relative;
+            height: 280px;
+        }
+
+        .finding-card {
+            border-left: 3px solid var(--blue-500);
+            padding-left: 16px;
+        }
+
+        .finding-card.emerald {
+            border-left-color: var(--emerald-500);
+        }
+
+        .finding-card.amber {
+            border-left-color: var(--amber-500);
+        }
+
+        .nav-link {
+            color: var(--slate-500);
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--slate-700);
+            background: var(--slate-100);
+        }
+
+        .nav-link.active {
+            color: var(--blue-600);
+            background: #eff6ff;
+        }
+
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 6px 10px;
+            background: var(--slate-800);
+            color: white;
+            font-size: 12px;
+            border-radius: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+
+        .glow-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .glow-dot::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border-radius: 50%;
+            background: inherit;
+            opacity: 0.3;
+            filter: blur(4px);
+        }
+    </style>
+</head>
+<body class="text-slate-700">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-6 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                    </div>
+                    <span class="font-semibold text-slate-800">Research Dashboard</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="#overview" class="nav-link active">Overview</a>
+                    <a href="#methodology" class="nav-link">Methodology</a>
+                    <a href="#findings" class="nav-link">Findings</a>
+                    <a href="#data" class="nav-link">Data</a>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="badge badge-emerald">Published 2025</span>
+                    <a href="https://doi.org/10.1007/s10956-025-10257-6" target="_blank" class="text-sm text-blue-600 hover:text-blue-700 font-medium">DOI →</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="max-w-7xl mx-auto px-6 pt-12 pb-8">
+        <div class="animate-in opacity-0">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="badge badge-blue">Journal of Science Education and Technology</span>
+                <span class="text-slate-400 text-sm">Vol. 2025</span>
+            </div>
+            <h1 class="font-serif text-4xl md:text-5xl font-semibold text-slate-900 leading-tight mb-6 max-w-4xl">
+                STEM-5E Socio-Scientific Argumentation with Generative AI-Driven Scaffolding
+            </h1>
+            <p class="text-xl text-slate-500 max-w-3xl mb-8">
+                Exploring the Interplay between Epistemic Beliefs and Learning Outcomes
+            </p>
+            <div class="flex flex-wrap items-center gap-6 text-sm">
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-blue-600 font-semibold">CS</div>
+                    <div>
+                        <div class="font-medium text-slate-800">Chi-Jung Sui</div>
+                        <div class="text-slate-400 text-xs">First Author</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-100 to-emerald-200 flex items-center justify-center text-emerald-600 font-semibold">CC</div>
+                    <div>
+                        <div class="font-medium text-slate-800">Chun-Yen Chang</div>
+                        <div class="text-slate-400 text-xs">Corresponding Author</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center text-amber-600 font-semibold">MY</div>
+                    <div>
+                        <div class="font-medium text-slate-800">Miao-Hsuan Yen</div>
+                        <div class="text-slate-400 text-xs">Co-Author</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Key Metrics -->
+    <section id="overview" class="max-w-7xl mx-auto px-6 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="ring-card metric-card p-6 animate-in opacity-0 delay-1">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-slate-400 font-medium">N</span>
+                </div>
+                <div class="text-3xl font-semibold text-slate-900 mb-1">94</div>
+                <div class="text-sm text-slate-500">Eighth-grade participants</div>
+            </div>
+
+            <div class="ring-card metric-card p-6 animate-in opacity-0 delay-2">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <span class="badge badge-emerald text-xs">Significant</span>
+                </div>
+                <div class="text-3xl font-semibold text-slate-900 mb-1">p = .002</div>
+                <div class="text-sm text-slate-500">Group × Task interaction</div>
+            </div>
+
+            <div class="ring-card metric-card p-6 animate-in opacity-0 delay-3">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-slate-400 font-medium">Duration</span>
+                </div>
+                <div class="text-3xl font-semibold text-slate-900 mb-1">95 min</div>
+                <div class="text-sm text-slate-500">Total intervention time</div>
+            </div>
+
+            <div class="ring-card metric-card p-6 animate-in opacity-0 delay-4">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-rose-50 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-slate-400 font-medium">Tasks</span>
+                </div>
+                <div class="text-3xl font-semibold text-slate-900 mb-1">3</div>
+                <div class="text-sm text-slate-500">Sequential SSI cycles</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Abstract Card -->
+    <section class="max-w-7xl mx-auto px-6 py-4">
+        <div class="card p-8 animate-in opacity-0 delay-5">
+            <div class="flex items-center gap-2 mb-4">
+                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <h2 class="text-lg font-semibold text-slate-800">Abstract</h2>
+            </div>
+            <p class="text-slate-600 leading-relaxed">
+                This study addresses the limitations of traditional STEM education by integrating socio-scientific issues within the STEM-5E instructional framework, using generative AI-driven scaffolding for self-regulated learning (GAISSR). We investigated how different types of GAISSR affect students' argumentation performance over time and how students' epistemic beliefs about generative AI (GenAI) relate to their improvement in argumentation skills. Ninety-four eighth-grade students participated, randomly assigned to metacognitive GAISSR, cognitive GAISSR, or a control group. Findings revealed a significant interaction between scaffolding type and task sequence; cognitive scaffolding initially improved performance but did not sustain gains, whereas metacognitive scaffolding supported continued improvement by the final task.
+            </p>
+        </div>
+    </section>
+
+    <!-- Research Design Section -->
+    <section id="methodology" class="max-w-7xl mx-auto px-6 py-8">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold text-slate-800">Research Design</h2>
+            <div class="flex gap-2">
+                <button class="tab-btn active" onclick="showTab('groups')">Groups</button>
+                <button class="tab-btn" onclick="showTab('procedure')">Procedure</button>
+                <button class="tab-btn" onclick="showTab('framework')">Framework</button>
+            </div>
+        </div>
+
+        <div id="groups-tab" class="tab-content">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="ring-card p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-lg">1</div>
+                        <div>
+                            <div class="font-semibold text-slate-800">Metacognitive GAISSR</div>
+                            <div class="text-sm text-slate-500">n = 32</div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4">Self-assessment + AI feedback on accuracy + metacognitive prompts</p>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-slate-500">Self-assessment</span>
+                            <span class="badge badge-blue text-xs">Required</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-slate-500">AI Feedback</span>
+                            <span class="badge badge-emerald text-xs">Both</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ring-card p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white font-bold text-lg">2</div>
+                        <div>
+                            <div class="font-semibold text-slate-800">Cognitive GAISSR</div>
+                            <div class="text-sm text-slate-500">n = 30</div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4">Direct content-focused hints without self-assessment step</p>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-slate-500">Self-assessment</span>
+                            <span class="badge badge-rose text-xs">Bypassed</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-slate-500">AI Feedback</span>
+                            <span class="badge badge-amber text-xs">Content only</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ring-card p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-400 to-slate-500 flex items-center justify-center text-white font-bold text-lg">3</div>
+                        <div>
+                            <div class="font-semibold text-slate-800">Control Group</div>
+                            <div class="text-sm text-slate-500">n = 32</div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4">Teacher-guided reflection without AI scaffolding</p>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-slate-500">Self-assessment</span>
+                            <span class="badge badge-blue text-xs">Manual</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-slate-500">AI Feedback</span>
+                            <span class="badge badge-rose text-xs">None</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="procedure-tab" class="tab-content hidden">
+            <div class="ring-card p-6">
+                <div class="flex items-center gap-4 overflow-x-auto pb-4">
+                    <div class="flex-shrink-0 text-center">
+                        <div class="w-16 h-16 rounded-full bg-blue-50 border-2 border-blue-200 flex items-center justify-center mb-2">
+                            <span class="text-blue-600 font-semibold">Pre</span>
+                        </div>
+                        <div class="text-xs text-slate-500">15 min</div>
+                        <div class="text-xs text-slate-400">Questionnaires</div>
+                    </div>
+                    <svg class="w-6 h-6 text-slate-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                    <div class="flex-shrink-0 text-center">
+                        <div class="w-16 h-16 rounded-full bg-emerald-50 border-2 border-emerald-200 flex items-center justify-center mb-2">
+                            <span class="text-emerald-600 font-semibold">5E</span>
+                        </div>
+                        <div class="text-xs text-slate-500">30 min</div>
+                        <div class="text-xs text-slate-400">Engage Phase</div>
+                    </div>
+                    <svg class="w-6 h-6 text-slate-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                    <div class="flex-shrink-0 text-center">
+                        <div class="w-16 h-16 rounded-full bg-amber-50 border-2 border-amber-200 flex items-center justify-center mb-2">
+                            <span class="text-amber-600 font-semibold">T1</span>
+                        </div>
+                        <div class="text-xs text-slate-500">20 min</div>
+                        <div class="text-xs text-slate-400">Fossil Fuels</div>
+                    </div>
+                    <svg class="w-6 h-6 text-slate-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                    <div class="flex-shrink-0 text-center">
+                        <div class="w-16 h-16 rounded-full bg-amber-50 border-2 border-amber-200 flex items-center justify-center mb-2">
+                            <span class="text-amber-600 font-semibold">T2</span>
+                        </div>
+                        <div class="text-xs text-slate-500">20 min</div>
+                        <div class="text-xs text-slate-400">Nuclear Energy</div>
+                    </div>
+                    <svg class="w-6 h-6 text-slate-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                    <div class="flex-shrink-0 text-center">
+                        <div class="w-16 h-16 rounded-full bg-amber-50 border-2 border-amber-200 flex items-center justify-center mb-2">
+                            <span class="text-amber-600 font-semibold">T3</span>
+                        </div>
+                        <div class="text-xs text-slate-500">20 min</div>
+                        <div class="text-xs text-slate-400">Renewable Energy</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="framework-tab" class="tab-content hidden">
+            <div class="ring-card p-6">
+                <h3 class="font-semibold text-slate-800 mb-4">COPES Model (Winne & Hadwin, 1998)</h3>
+                <div class="grid grid-cols-5 gap-4">
+                    <div class="text-center p-4 rounded-lg bg-slate-50">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-2">
+                            <span class="text-blue-600 font-semibold text-sm">C</span>
+                        </div>
+                        <div class="font-medium text-slate-700 text-sm">Conditions</div>
+                        <div class="text-xs text-slate-500 mt-1">Internal & external factors</div>
+                    </div>
+                    <div class="text-center p-4 rounded-lg bg-slate-50">
+                        <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-2">
+                            <span class="text-emerald-600 font-semibold text-sm">O</span>
+                        </div>
+                        <div class="font-medium text-slate-700 text-sm">Operations</div>
+                        <div class="text-xs text-slate-500 mt-1">Cognitive strategies</div>
+                    </div>
+                    <div class="text-center p-4 rounded-lg bg-slate-50">
+                        <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-2">
+                            <span class="text-amber-600 font-semibold text-sm">P</span>
+                        </div>
+                        <div class="font-medium text-slate-700 text-sm">Products</div>
+                        <div class="text-xs text-slate-500 mt-1">Written arguments</div>
+                    </div>
+                    <div class="text-center p-4 rounded-lg bg-slate-50">
+                        <div class="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center mx-auto mb-2">
+                            <span class="text-rose-600 font-semibold text-sm">E</span>
+                        </div>
+                        <div class="font-medium text-slate-700 text-sm">Evaluations</div>
+                        <div class="text-xs text-slate-500 mt-1">Self-assessment</div>
+                    </div>
+                    <div class="text-center p-4 rounded-lg bg-slate-50">
+                        <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-2">
+                            <span class="text-purple-600 font-semibold text-sm">S</span>
+                        </div>
+                        <div class="font-medium text-slate-700 text-sm">Standards</div>
+                        <div class="text-xs text-slate-500 mt-1">GAISSR feedback</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section id="findings" class="max-w-7xl mx-auto px-6 py-8">
+        <h2 class="text-xl font-semibold text-slate-800 mb-6">Key Findings</h2>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Performance Chart -->
+            <div class="ring-card p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-slate-800">Argumentation Performance by Task</h3>
+                    <span class="text-xs text-slate-400">Estimated Marginal Means</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+                <div class="flex items-center justify-center gap-6 mt-4 text-sm">
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                        <span class="text-slate-600">Metacognitive</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                        <span class="text-slate-600">Cognitive</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-slate-400"></div>
+                        <span class="text-slate-600">Control</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bayesian Analysis -->
+            <div class="ring-card p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-slate-800">Bayesian Analysis: Improved vs Lagging</h3>
+                    <span class="text-xs text-slate-400">Posterior Estimates (95% CI)</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="bayesianChart"></canvas>
+                </div>
+                <p class="text-xs text-slate-500 mt-4 text-center">
+                    CSGC: Certainty & Source | JGC: Justification | SGC: Structure | SR: Self-Regulation
+                </p>
+            </div>
+        </div>
+
+        <!-- Key Findings Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+            <div class="ring-card p-6">
+                <div class="finding-card">
+                    <h4 class="font-semibold text-slate-800 mb-2">Scaffolding Effect</h4>
+                    <p class="text-sm text-slate-600">
+                        Metacognitive scaffolding promoted deeper, enduring argumentation skills through self-assessment and reflective prompts.
+                    </p>
+                </div>
+            </div>
+            <div class="ring-card p-6">
+                <div class="finding-card emerald">
+                    <h4 class="font-semibold text-slate-800 mb-2">Epistemic Beliefs</h4>
+                    <p class="text-sm text-slate-600">
+                        Students who improved held stronger beliefs in certainty (pd=99.97%), source, and structure of GenAI content.
+                    </p>
+                </div>
+            </div>
+            <div class="ring-card p-6">
+                <div class="finding-card amber">
+                    <h4 class="font-semibold text-slate-800 mb-2">Learning Trajectory</h4>
+                    <p class="text-sm text-slate-600">
+                        Cognitive scaffolding showed early gains that plateaued; metacognitive scaffolding sustained improvement.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Tables Section -->
+    <section id="data" class="max-w-7xl mx-auto px-6 py-8">
+        <h2 class="text-xl font-semibold text-slate-800 mb-6">Research Data</h2>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- LMM Results Table -->
+            <div class="ring-card p-6">
+                <h3 class="font-semibold text-slate-800 mb-4">Linear Mixed Model Results</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-slate-200">
+                                <th class="text-left py-2 text-slate-500 font-medium">Effect</th>
+                                <th class="text-right py-2 text-slate-500 font-medium">β</th>
+                                <th class="text-right py-2 text-slate-500 font-medium">SE</th>
+                                <th class="text-right py-2 text-slate-500 font-medium">t</th>
+                                <th class="text-right py-2 text-slate-500 font-medium">p</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-slate-700">
+                            <tr class="border-b border-slate-100">
+                                <td class="py-2">Intercept</td>
+                                <td class="text-right">2.163</td>
+                                <td class="text-right">0.080</td>
+                                <td class="text-right">27.064</td>
+                                <td class="text-right text-blue-600 font-medium"><.001</td>
+                            </tr>
+                            <tr class="border-b border-slate-100">
+                                <td class="py-2">Group (1)</td>
+                                <td class="text-right">0.025</td>
+                                <td class="text-right">0.112</td>
+                                <td class="text-right">0.222</td>
+                                <td class="text-right text-slate-400">.824</td>
+                            </tr>
+                            <tr class="border-b border-slate-100">
+                                <td class="py-2">Group (2)</td>
+                                <td class="text-right">-0.029</td>
+                                <td class="text-right">0.114</td>
+                                <td class="text-right">-0.255</td>
+                                <td class="text-right text-slate-400">.799</td>
+                            </tr>
+                            <tr class="border-b border-slate-100 bg-blue-50/50">
+                                <td class="py-2">Group (1) × Task (2)</td>
+                                <td class="text-right">-0.252</td>
+                                <td class="text-right">0.097</td>
+                                <td class="text-right">-2.590</td>
+                                <td class="text-right text-blue-600 font-medium">.010</td>
+                            </tr>
+                            <tr class="border-b border-slate-100 bg-blue-50/50">
+                                <td class="py-2">Group (2) × Task (2)</td>
+                                <td class="text-right">0.233</td>
+                                <td class="text-right">0.099</td>
+                                <td class="text-right">2.358</td>
+                                <td class="text-right text-blue-600 font-medium">.019</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-xs text-slate-400 mt-4">Group 1: Metacognitive GAISSR | Group 2: Cognitive GAISSR</p>
+            </div>
+
+            <!-- EMM Table -->
+            <div class="ring-card p-6">
+                <h3 class="font-semibold text-slate-800 mb-4">Estimated Marginal Means</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-slate-200">
+                                <th class="text-left py-2 text-slate-500 font-medium">Group</th>
+                                <th class="text-center py-2 text-slate-500 font-medium">Task</th>
+                                <th class="text-right py-2 text-slate-500 font-medium">EMM</th>
+                                <th class="text-right py-2 text-slate-500 font-medium">SE</th>
+                                <th class="text-right py-2 text-slate-500 font-medium">95% CI</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-slate-700">
+                            <tr class="border-b border-slate-100">
+                                <td class="py-2"><span class="w-2 h-2 rounded-full bg-blue-500 inline-block mr-2"></span>Metacognitive</td>
+                                <td class="text-center">1</td>
+                                <td class="text-right font-medium">1.844</td>
+                                <td class="text-right">0.181</td>
+                                <td class="text-right text-slate-500">[1.49, 2.20]</td>
+                            </tr>
+                            <tr class="border-b border-slate-100">
+                                <td class="py-2"><span class="w-2 h-2 rounded-full bg-blue-500 inline-block mr-2"></span>Metacognitive</td>
+                                <td class="text-center">2</td>
+                                <td class="text-right font-medium">1.969</td>
+                                <td class="text-right">0.181</td>
+                                <td class="text-right text-slate-500">[1.61, 2.32]</td>
+                            </tr>
+                            <tr class="border-b border-slate-100 bg-emerald-50/50">
+                                <td class="py-2"><span class="w-2 h-2 rounded-full bg-blue-500 inline-block mr-2"></span>Metacognitive</td>
+                                <td class="text-center">3</td>
+                                <td class="text-right font-semibold text-emerald-600">2.750</td>
+                                <td class="text-right">0.181</td>
+                                <td class="text-right text-slate-500">[2.40, 3.11]</td>
+                            </tr>
+                            <tr class="border-b border-slate-100">
+                                <td class="py-2"><span class="w-2 h-2 rounded-full bg-emerald-500 inline-block mr-2"></span>Cognitive</td>
+                                <td class="text-center">1</td>
+                                <td class="text-right font-medium">1.867</td>
+                                <td class="text-right">0.187</td>
+                                <td class="text-right text-slate-500">[1.50, 2.23]</td>
+                            </tr>
+                            <tr class="border-b border-slate-100 bg-amber-50/50">
+                                <td class="py-2"><span class="w-2 h-2 rounded-full bg-emerald-500 inline-block mr-2"></span>Cognitive</td>
+                                <td class="text-center">2</td>
+                                <td class="text-right font-semibold text-amber-600">2.400</td>
+                                <td class="text-right">0.187</td>
+                                <td class="text-right text-slate-500">[2.03, 2.77]</td>
+                            </tr>
+                            <tr class="border-b border-slate-100">
+                                <td class="py-2"><span class="w-2 h-2 rounded-full bg-emerald-500 inline-block mr-2"></span>Cognitive</td>
+                                <td class="text-center">3</td>
+                                <td class="text-right font-medium">2.133</td>
+                                <td class="text-right">0.187</td>
+                                <td class="text-right text-slate-500">[1.77, 2.50]</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Implications Section -->
+    <section class="max-w-7xl mx-auto px-6 py-8">
+        <div class="card p-8 bg-gradient-to-br from-blue-50 to-white border-blue-100">
+            <h2 class="text-xl font-semibold text-slate-800 mb-6">Implications for Practice</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="flex gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-slate-800 mb-1">Metacognitive Scaffolding</h4>
+                        <p class="text-sm text-slate-600">Leverage GenAI to deliver reflective prompts following self-assessment for deeper cognitive engagement.</p>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-slate-800 mb-1">Calibrated Trust</h4>
+                        <p class="text-sm text-slate-600">Foster sophisticated understanding of GenAI capabilities and limitations for critical appraisal skills.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto px-6 py-8 border-t border-slate-200 mt-8">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="text-sm text-slate-500">
+                <span class="font-medium">Citation:</span> Sui, C.-J., Chang, C.-Y., & Yen, M.-H. (2025). STEM-5E Socio-Scientific Argumentation with Generative AI-Driven Scaffolding. <em>Journal of Science Education and Technology</em>.
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="text-xs text-slate-400">Funded by NSTC Taiwan</span>
+                <a href="https://doi.org/10.1007/s10956-025-10257-6" target="_blank" class="text-sm text-blue-600 hover:text-blue-700 font-medium">View Full Paper →</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Tab switching
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabName + '-tab').classList.remove('hidden');
+            event.target.classList.add('active');
+        }
+
+        // Performance Chart
+        const perfCtx = document.getElementById('performanceChart').getContext('2d');
+        new Chart(perfCtx, {
+            type: 'line',
+            data: {
+                labels: ['Task 1\n(Fossil Fuels)', 'Task 2\n(Nuclear)', 'Task 3\n(Renewable)'],
+                datasets: [
+                    {
+                        label: 'Metacognitive GAISSR',
+                        data: [1.844, 1.969, 2.750],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 2.5,
+                        tension: 0.3,
+                        pointRadius: 6,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#3b82f6',
+                        pointBorderWidth: 2,
+                        fill: true
+                    },
+                    {
+                        label: 'Cognitive GAISSR',
+                        data: [1.867, 2.400, 2.133],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2.5,
+                        tension: 0.3,
+                        pointRadius: 6,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#10b981',
+                        pointBorderWidth: 2,
+                        fill: true
+                    },
+                    {
+                        label: 'Control',
+                        data: [2.125, 2.219, 2.156],
+                        borderColor: '#94a3b8',
+                        backgroundColor: 'rgba(148, 163, 184, 0.1)',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        tension: 0.3,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#94a3b8',
+                        pointBorderWidth: 2,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        titleFont: { size: 13 },
+                        bodyFont: { size: 12 },
+                        padding: 12,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y.toFixed(3);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        min: 1.5,
+                        max: 3.0,
+                        grid: {
+                            color: '#f1f5f9'
+                        },
+                        ticks: {
+                            color: '#64748b',
+                            font: { size: 12 }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#64748b',
+                            font: { size: 11 }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Bayesian Forest Plot
+        const bayesCtx = document.getElementById('bayesianChart').getContext('2d');
+        new Chart(bayesCtx, {
+            type: 'bar',
+            data: {
+                labels: ['CSGC', 'JGC', 'SGC', 'SR'],
+                datasets: [{
+                    label: 'Posterior Median',
+                    data: [0.76, 0.37, 0.54, 0.24],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.8)',
+                        'rgba(245, 158, 11, 0.8)',
+                        'rgba(16, 185, 129, 0.8)',
+                        'rgba(244, 63, 94, 0.8)'
+                    ],
+                    borderColor: [
+                        '#3b82f6',
+                        '#f59e0b',
+                        '#10b981',
+                        '#f43f5e'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 6,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        titleFont: { size: 13 },
+                        bodyFont: { size: 12 },
+                        padding: 12,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                const ci = [
+                                    '[0.34, 1.18]',
+                                    '[-0.02, 0.77]',
+                                    '[0.11, 0.97]',
+                                    '[-0.23, 0.71]'
+                                ];
+                                return 'Median: ' + context.parsed.x.toFixed(2) + ', 95% CI: ' + ci[context.dataIndex];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        min: -0.5,
+                        max: 1.5,
+                        grid: {
+                            color: '#f1f5f9'
+                        },
+                        ticks: {
+                            color: '#64748b',
+                            font: { size: 12 }
+                        }
+                    },
+                    y: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#334155',
+                            font: { size: 13, weight: 500 }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Add error bars for Bayesian chart
+        const originalDraw = Chart.controllers.bar.prototype.draw;
+        Chart.controllers.bar.prototype.draw = function(ease) {
+            originalDraw.call(this, ease);
+            const ctx = this.chart.ctx;
+            const meta = this.getMeta();
+            const ciData = [
+                { low: 0.34, high: 1.18 },
+                { low: -0.02, high: 0.77 },
+                { low: 0.11, high: 0.97 },
+                { low: -0.23, high: 0.71 }
+            ];
+            
+            meta.data.forEach((bar, index) => {
+                const ci = ciData[index];
+                const yCenter = bar.y;
+                const xScale = this.chart.scales.x;
+                const xLow = xScale.getPixelForValue(ci.low);
+                const xHigh = xScale.getPixelForValue(ci.high);
+                
+                ctx.save();
+                ctx.strokeStyle = '#64748b';
+                ctx.lineWidth = 2;
+                
+                // Horizontal line
+                ctx.beginPath();
+                ctx.moveTo(xLow, yCenter);
+                ctx.lineTo(xHigh, yCenter);
+                ctx.stroke();
+                
+                // Caps
+                ctx.beginPath();
+                ctx.moveTo(xLow, yCenter - 5);
+                ctx.lineTo(xLow, yCenter + 5);
+                ctx.moveTo(xHigh, yCenter - 5);
+                ctx.lineTo(xHigh, yCenter + 5);
+                ctx.stroke();
+                
+                ctx.restore();
+            });
+        };
+
+        // Animate elements on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.animate-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
